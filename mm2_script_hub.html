@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MM2 Script Hub | Roblox Murder Mystery 2</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#0B0D14',
+                            card: '#121520',
+                            border: '#1F2438',
+                            red: '#FF2E54',
+                            purple: '#A855F7',
+                            gold: '#EAB308',
+                            cyan: '#06B6D4'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    },
+                    animation: {
+                        'pulse-glow': 'pulseGlow 3s infinite alternate',
+                        'float': 'float 4s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        pulseGlow: {
+                            '0%': { boxShadow: '0 0 15px rgba(255, 46, 84, 0.2)' },
+                            '100%': { boxShadow: '0 0 35px rgba(168, 85, 247, 0.5)' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-8px)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Glowing & Glassmorphism Styling */
+        body {
+            background-color: #080A0F;
+            color: #F3F4F6;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .glass-panel {
+            background: rgba(18, 21, 32, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-card {
+            background: rgba(18, 21, 32, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(168, 85, 247, 0.4);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px -10px rgba(168, 85, 247, 0.25);
+        }
+
+        .glow-red-hover:hover {
+            box-shadow: 0 0 20px rgba(255, 46, 84, 0.4);
+        }
+
+        .glow-purple-hover:hover {
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+        }
+
+        .glow-gold-hover:hover {
+            box-shadow: 0 0 20px rgba(234, 179, 8, 0.4);
+        }
+
+        .text-gradient-primary {
+            background: linear-gradient(135deg, #FF2E54 0%, #A855F7 50%, #EAB308 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0D14;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1F2438;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #A855F7;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-brand-purple selection:text-white">
+
+    <!-- Ambient Background Lighting Effect -->
+    <div class="fixed top-0 left-1/4 w-96 h-96 bg-brand-red/10 rounded-full blur-[120px] pointer-events-none -z-10"></div>
+    <div class="fixed top-1/3 right-1/4 w-96 h-96 bg-brand-purple/15 rounded-full blur-[140px] pointer-events-none -z-10"></div>
+    <div class="fixed bottom-10 left-1/3 w-80 h-80 bg-brand-gold/10 rounded-full blur-[120px] pointer-events-none -z-10"></div>
+
+    <!-- Top Navigation Bar -->
+    <header class="sticky top-0 z-40 glass-panel border-b border-brand-border/60">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="resetFilters()">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-red via-brand-purple to-brand-gold p-0.5 shadow-lg shadow-brand-red/20">
+                    <div class="w-full h-full bg-brand-dark rounded-[10px] flex items-center justify-center">
+                        <i class="fa-solid fa-crosshairs text-brand-red text-xl"></i>
+                    </div>
+                </div>
+                <div>
+                    <span class="text-xl font-extrabold tracking-wider text-white">MM2<span class="text-brand-purple">HUB</span></span>
+                    <span class="block text-[10px] text-gray-400 font-mono tracking-widest uppercase">Roblox Scripts v2.4</span>
+                </div>
+            </div>
+
+            <!-- Header Nav Links & Actions -->
+            <div class="flex items-center space-x-4">
+                <a href="#scripts-section" class="hidden md:flex items-center space-x-2 text-sm font-medium text-gray-300 hover:text-white transition-colors">
+                    <i class="fa-solid fa-code text-brand-purple"></i>
+                    <span>Скрипты</span>
+                </a>
+                <button onclick="openInstructionsModal()" class="hidden sm:flex items-center space-x-2 text-sm font-medium text-gray-300 hover:text-white transition-colors px-3 py-2 rounded-lg bg-brand-border/30 hover:bg-brand-border/60 border border-brand-border">
+                    <i class="fa-solid fa-circle-question text-brand-gold"></i>
+                    <span>Инструкция</span>
+                </button>
+                <a href="#disclaimer-section" class="text-xs sm:text-sm font-medium text-brand-red/90 hover:text-brand-red transition-colors px-3 py-2 rounded-lg bg-brand-red/10 border border-brand-red/30">
+                    <i class="fa-solid fa-triangle-exclamation mr-1"></i> Дисклеймер
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Banner -->
+    <section class="relative py-12 lg:py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-purple/10 border border-brand-purple/30 text-brand-purple text-xs font-semibold uppercase tracking-wider mb-6 animate-pulse">
+            <span class="w-2 h-2 rounded-full bg-brand-purple animate-ping"></span>
+            Обновлено под последний патч Roblox MM2
+        </div>
+        <h1 class="text-4xl sm:text-6xl font-black tracking-tight text-white mb-6">
+            Лучшие Скрипты для <br class="hidden sm:inline" />
+            <span class="text-gradient-primary">Murder Mystery 2</span>
+        </h1>
+        <p class="max-w-2xl mx-auto text-base sm:text-lg text-gray-400 mb-8 leading-relaxed">
+            Максимальное преимущество в игре: полная подсветка ролей (ESP), авто-ферма монет, Полет, GodMode и телепортация. Безопасно, быстро и бесплатно.
+        </p>
+
+        <!-- Stats Overview Bar -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto mb-10">
+            <div class="glass-panel p-4 rounded-xl text-center">
+                <div class="text-2xl font-bold text-white font-mono">100%</div>
+                <div class="text-xs text-gray-400 mt-1">Рабочие скрипты</div>
+            </div>
+            <div class="glass-panel p-4 rounded-xl text-center">
+                <div class="text-2xl font-bold text-brand-purple font-mono">0.01с</div>
+                <div class="text-xs text-gray-400 mt-1">Отклик хука</div>
+            </div>
+            <div class="glass-panel p-4 rounded-xl text-center">
+                <div class="text-2xl font-bold text-brand-gold font-mono">Safe</div>
+                <div class="text-xs text-gray-400 mt-1">Anti-Ban bypass</div>
+            </div>
+            <div class="glass-panel p-4 rounded-xl text-center">
+                <div class="text-2xl font-bold text-brand-red font-mono">24/7</div>
+                <div class="text-xs text-gray-400 mt-1">Поддержка инжекторов</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content Section: Filter, Search, and Scripts Grid -->
+    <main id="scripts-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 flex-grow w-full">
+        
+        <!-- Controls: Search & Category Filters -->
+        <div class="glass-panel p-4 sm:p-6 rounded-2xl mb-10 border border-brand-border">
+            <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+                
+                <!-- Search Input -->
+                <div class="relative w-full md:w-80">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" id="searchInput" oninput="filterScripts()" placeholder="Поиск скрипта или функции..." 
+                        class="w-full bg-brand-dark/80 border border-brand-border rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-brand-purple focus:ring-1 focus:ring-brand-purple transition-all">
+                </div>
+
+                <!-- Category Buttons -->
+                <div class="flex flex-wrap items-center gap-2 w-full md:w-auto" id="categoryFilters">
+                    <button onclick="setCategory('all')" data-cat="all" class="cat-btn active px-4 py-2.5 rounded-xl text-xs font-semibold transition-all bg-brand-purple text-white shadow-lg shadow-brand-purple/30">
+                        Все скрипты
+                    </button>
+                    <button onclick="setCategory('movement')" data-cat="movement" class="cat-btn px-4 py-2.5 rounded-xl text-xs font-semibold text-gray-400 bg-brand-card hover:bg-brand-border border border-brand-border transition-all">
+                        <i class="fa-solid fa-person-running mr-1 text-brand-cyan"></i> Движение
+                    </button>
+                    <button onclick="setCategory('visuals')" data-cat="visuals" class="cat-btn px-4 py-2.5 rounded-xl text-xs font-semibold text-gray-400 bg-brand-card hover:bg-brand-border border border-brand-border transition-all">
+                        <i class="fa-solid fa-eye mr-1 text-brand-gold"></i> Визуалы (ESP)
+                    </button>
+                    <button onclick="setCategory('farming')" data-cat="farming" class="cat-btn px-4 py-2.5 rounded-xl text-xs font-semibold text-gray-400 bg-brand-card hover:bg-brand-border border border-brand-border transition-all">
+                        <i class="fa-solid fa-coins mr-1 text-brand-purple"></i> Фарм
+                    </button>
+                    <button onclick="setCategory('combat')" data-cat="combat" class="cat-btn px-4 py-2.5 rounded-xl text-xs font-semibold text-gray-400 bg-brand-card hover:bg-brand-border border border-brand-border transition-all">
+                        <i class="fa-solid fa-skull mr-1 text-brand-red"></i> Бой / Боги
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scripts Grid -->
+        <div id="scriptsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Dynamic Content Injected via JS -->
+        </div>
+
+        <!-- Empty State Message -->
+        <div id="emptyState" class="hidden text-center py-16 glass-panel rounded-2xl border border-brand-border">
+            <i class="fa-solid fa-ghost text-5xl text-gray-600 mb-4"></i>
+            <h3 class="text-xl font-bold text-white mb-2">Ничего не найдено</h3>
+            <p class="text-gray-400 text-sm mb-6">Попробуйте изменить поисковый запрос или выбрать другую категорию.</p>
+            <button onclick="resetFilters()" class="px-5 py-2.5 rounded-xl bg-brand-purple hover:bg-brand-purple/80 text-white font-medium text-xs transition-all">
+                Сбросить фильтры
+            </button>
+        </div>
+    </main>
+
+    <!-- Educational Disclaimer Section -->
+    <section id="disclaimer-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+        <div class="glass-panel rounded-2xl p-6 sm:p-8 border border-brand-red/30 relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-brand-red/10 rounded-full blur-2xl"></div>
+            <div class="flex flex-col sm:flex-row items-start gap-5">
+                <div class="p-3.5 rounded-xl bg-brand-red/20 text-brand-red border border-brand-red/40 flex-shrink-0">
+                    <i class="fa-solid fa-shield-halved text-2xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                        <span>Отказ от ответственности и Предупреждение</span>
+                    </h3>
+                    <p class="text-sm text-gray-300 leading-relaxed mb-3">
+                        Все представленные скрипты, материалы и инструкции предоставлены исключительно в <strong>учебных, ознакомительных и исследовательских целях</strong>. Разработчики данного сайта не несут ответственности за блокировки игровых аккаунтов Roblox, последствия использования стороннего ПО или любые другие санкции со стороны администрации игры.
+                    </p>
+                    <p class="text-xs text-gray-400 leading-relaxed">
+                        Используйте сторонние скрипты только на свой собственный риск и страх (Use at your own risk). Мы рекомендуем тестировать функции на альтернативных (твинк) аккаунтах.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-brand-border/60 glass-panel py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-bolt text-brand-gold"></i>
+                <span class="text-sm font-semibold text-gray-300">MM2 Script Hub &copy; 2026</span>
+            </div>
+            <p class="text-xs text-gray-500 text-center">
+                Не связан с Roblox Corporation или Murder Mystery 2. Все права на товарные знаки принадлежат их владельцам.
+            </p>
+            <div class="flex items-center space-x-4 text-gray-400 text-lg">
+                <a href="#" class="hover:text-brand-purple transition-colors"><i class="fa-brands fa-discord"></i></a>
+                <a href="#" class="hover:text-brand-red transition-colors"><i class="fa-brands fa-github"></i></a>
+                <a href="#" class="hover:text-brand-gold transition-colors"><i class="fa-brands fa-telegram"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Code Preview Modal / Drawer -->
+    <div id="codeModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300">
+        <div class="bg-brand-card border border-brand-border rounded-2xl w-full max-w-3xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden transform scale-95 transition-all duration-300" id="codeModalContainer">
+            
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-brand-border flex items-center justify-between bg-brand-dark/50">
+                <div class="flex items-center space-x-3">
+                    <span id="modalCategoryBadge" class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-brand-purple/20 text-brand-purple border border-brand-purple/30">
+                        Lua Script
+                    </span>
+                    <h3 id="modalTitle" class="text-lg font-bold text-white">Название скрипта</h3>
+                </div>
+                <button onclick="closeCodeModal()" class="text-gray-400 hover:text-white p-1 rounded-lg hover:bg-brand-border/50 transition-colors">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body (Code Viewer) -->
+            <div class="p-6 overflow-y-auto flex-grow bg-brand-dark/90 font-mono text-xs sm:text-sm text-emerald-400">
+                <pre id="modalCode" class="whitespace-pre-wrap break-all select-all leading-relaxed"></pre>
+            </div>
+
+            <!-- Modal Footer Controls -->
+            <div class="px-6 py-4 border-t border-brand-border flex flex-wrap items-center justify-between gap-3 bg-brand-dark/50">
+                <span class="text-xs text-gray-400 flex items-center gap-1">
+                    <i class="fa-solid fa-shield-check text-emerald-400"></i> Проверено на отсутствие вирусов
+                </span>
+                <div class="flex items-center gap-3">
+                    <button onclick="copyModalCode()" class="px-4 py-2 rounded-xl bg-brand-purple hover:bg-brand-purple/80 text-white font-medium text-xs flex items-center gap-2 transition-all shadow-lg shadow-brand-purple/20">
+                        <i class="fa-regular fa-copy"></i> Скопировать код
+                    </button>
+                    <button onclick="closeCodeModal()" class="px-4 py-2 rounded-xl bg-brand-border/50 hover:bg-brand-border text-gray-300 font-medium text-xs transition-all">
+                        Закрыть
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Execution Instructions Modal -->
+    <div id="instructionsModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300">
+        <div class="bg-brand-card border border-brand-border rounded-2xl w-full max-w-xl p-6 shadow-2xl transform scale-95 transition-all duration-300" id="instructionsModalContainer">
+            <div class="flex items-center justify-between mb-6 border-b border-brand-border pb-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-brand-gold/20 text-brand-gold flex items-center justify-center border border-brand-gold/30">
+                        <i class="fa-solid fa-terminal text-lg"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white">Как запустить скрипт в MM2?</h3>
+                </div>
+                <button onclick="closeInstructionsModal()" class="text-gray-400 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4 text-sm text-gray-300 mb-6">
+                <div class="flex items-start gap-3">
+                    <div class="w-6 h-6 rounded-full bg-brand-purple/20 text-brand-purple flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">1</div>
+                    <p><strong class="text-white">Скопируйте код:</strong> Нажмите кнопку <span class="text-brand-purple font-medium">«Скопировать»</span> на карточке нужного скрипта.</p>
+                </div>
+                <div class="flex items-start gap-3">
+                    <div class="w-6 h-6 rounded-full bg-brand-purple/20 text-brand-purple flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">2</div>
+                    <p><strong class="text-white">Запустите Executor:</strong> Откройте ваш инжектор (Solara, Wave, Delta, Hydrogen, Codex или другой).</p>
+                </div>
+                <div class="flex items-start gap-3">
+                    <div class="w-6 h-6 rounded-full bg-brand-purple/20 text-brand-purple flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">3</div>
+                    <p><strong class="text-white">Зайдите в MM2:</strong> Запустите Roblox и войдите на любой сервер Murder Mystery 2.</p>
+                </div>
+                <div class="flex items-start gap-3">
+                    <div class="w-6 h-6 rounded-full bg-brand-purple/20 text-brand-purple flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">4</div>
+                    <p><strong class="text-white">Execute:</strong> Вставьте скопированный Lua-скрипт в окно инжектора и нажмите кнопку <span class="text-emerald-400 font-medium">Execute</span>.</p>
+                </div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-brand-dark/80 border border-brand-border text-xs text-gray-400 mb-6">
+                <span class="text-brand-gold font-bold"><i class="fa-solid fa-circle-info mr-1"></i> Совместимость:</span> Поддерживаются последние версии инжекторов для Windows и Android/iOS.
+            </div>
+
+            <button onclick="closeInstructionsModal()" class="w-full py-3 rounded-xl bg-brand-purple hover:bg-brand-purple/80 text-white font-semibold text-xs tracking-wider uppercase transition-all shadow-lg shadow-brand-purple/20">
+                Понятно, закрыть
+            </button>
+        </div>
+    </div>
+
+    <!-- Notification Toast Container -->
+    <div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 pointer-events-none"></div>
+
+    <!-- JavaScript Data and Application Logic -->
+    <script>
+        // Scripts Database Object
+        const scriptsData = [
+            {
+                id: 'fly-mode',
+                title: 'Fly Hack & Noclip (Полет)',
+                category: 'movement',
+                catLabel: 'Движение',
+                accentColor: 'border-brand-cyan/30 hover:border-brand-cyan/60',
+                badgeBg: 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/30',
+                icon: 'fa-solid fa-plane-up text-brand-cyan',
+                description: 'Позволяет свободно летать по всей карте MM2, проходить сквозь стены и зависать над картой, избегая убийцу.',
+                features: [
+                    'Регулировка скорости полета (WASD)',
+                    'Режим Noclip (Проход сквозь стены)',
+                    'Горячая клавиша вкл/выкл (E или F)',
+                    'Защита от анти-чита высоты'
+                ],
+                luaCode: `-- [[ MM2 Fly Hack & Noclip Script ]]
+local Speed = 50
+local Player = game.Players.LocalPlayer
+local Mouse = Player:GetMouse()
+local FlyActive = false
+
+local FlyToggle = Instance.new("ScreenGui")
+-- Universal Fly Implementation for Roblox MM2
+loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()`
+            },
+            {
+                id: 'infinite-jump',
+                title: 'Infinite Jump (Бесконечный прыжок)',
+                category: 'movement',
+                catLabel: 'Движение',
+                accentColor: 'border-brand-cyan/30 hover:border-brand-cyan/60',
+                badgeBg: 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/30',
+                icon: 'fa-solid fa-angles-up text-brand-cyan',
+                description: 'Позволяет прыгать неограниченное количество раз прямо в воздухе. Забирайтесь на крыши и недоступные локации.',
+                features: [
+                    'Бесконечные прыжки в воздухе',
+                    'Без задержек и перезарядки',
+                    'Лёгкое управление пробелом',
+                    'Минимальный риск детекта'
+                ],
+                luaCode: `-- [[ MM2 Infinite Jump Script ]]
+local UserInputService = game:GetService("UserInputService")
+local LocalPlayer = game:GetService("Players").LocalPlayer
+
+UserInputService.JumpRequest:Connect(function()
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
+        LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
+    end
+end)`
+            },
+            {
+                id: 'esp-wallhack',
+                title: 'ESP & Wallhack (Подсветка ролей)',
+                category: 'visuals',
+                catLabel: 'Визуалы',
+                accentColor: 'border-brand-gold/30 hover:border-brand-gold/60',
+                badgeBg: 'bg-brand-gold/10 text-brand-gold border-brand-gold/30',
+                icon: 'fa-solid fa-eye text-brand-gold',
+                description: 'Подсвечивает игроков через стены с цветовой индикацией их ролей: Убийца (Красный), Шериф (Синий), Невинный (Зеленый).',
+                features: [
+                    'Цветовая подсветка ролей (Chams/Highlight)',
+                    'Отображение расстояния до игроков',
+                    'Подсветка выпавшего пистолета Шерифа',
+                    'Линии направления (Tracer Lines)'
+                ],
+                luaCode: `-- [[ MM2 Full Role ESP & Wallhack ]]
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local function applyESP(player)
+    player.CharacterAdded:Connect(function(char)
+        local highlight = Instance.new("Highlight")
+        highlight.Parent = char
+        highlight.FillTransparency = 0.5
+        highlight.OutlineTransparency = 0
+        
+        RunService.RenderStepped:Connect(function()
+            if char:FindFirstChild("Knife") or player.Backpack:FindFirstChild("Knife") then
+                highlight.FillColor = Color3.fromRGB(255, 0, 0) -- Murderer
+            elseif char:FindFirstChild("Gun") or player.Backpack:FindFirstChild("Gun") then
+                highlight.FillColor = Color3.fromRGB(0, 150, 255) -- Sheriff
+            else
+                highlight.FillColor = Color3.fromRGB(0, 255, 100) -- Innocent
+            end
+        end)
+    end)
+end
+
+for _, v in pairs(Players:GetPlayers()) do
+    if v ~= Players.LocalPlayer then applyESP(v) end
+end`
+            },
+            {
+                id: 'autofarm-coins',
+                title: 'Auto Farm Coins (Авто-ферм монет)',
+                category: 'farming',
+                catLabel: 'Фарм',
+                accentColor: 'border-brand-purple/30 hover:border-brand-purple/60',
+                badgeBg: 'bg-brand-purple/10 text-brand-purple border-brand-purple/30',
+                icon: 'fa-solid fa-coins text-brand-purple',
+                description: 'Автоматически телепортируется и собирает монеты по всей карте на высокой скорости до заполнения сумки.',
+                features: [
+                    'Безопасный авто-сбор монет без бана',
+                    'Авто-возврат в безопасную зону при лимите',
+                    'Регулируемая скорость телепортации',
+                    'Автоматический поиск нового сервера (ServerHop)'
+                ],
+                luaCode: `-- [[ MM2 Safe Auto-Farm Coins Script ]]
+getgenv().AutoFarm = true
+getgenv().FarmSpeed = 25
+
+task.spawn(function()
+    while getgenv().AutoFarm do
+        task.wait(0.1)
+        local coinContainer = workspace:FindFirstChild("CoinContainer", true)
+        if coinContainer then
+            for _, coin in pairs(coinContainer:GetChildren()) do
+                if coin:IsA("BasePart") and getgenv().AutoFarm then
+                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = coin.CFrame
+                    task.wait(1 / getgenv().FarmSpeed)
+                end
+            end
+        end
+    end
+end)`
+            },
+            {
+                id: 'kill-all-godmode',
+                title: 'Kill All & GodMode (Убить всех / Годмод)',
+                category: 'combat',
+                catLabel: 'Бой',
+                accentColor: 'border-brand-red/30 hover:border-brand-red/60',
+                badgeBg: 'bg-brand-red/10 text-brand-red border-brand-red/30',
+                icon: 'fa-solid fa-skull text-brand-red',
+                description: 'Функция для роли Убийцы: мгновенный телепорт к игрокам и убийство, а также режим бессмертия от выстрелов шерифа.',
+                features: [
+                    'Auto-Kill All (Зачистка карты за секунды)',
+                    'Aimbot на Шерифа / Убийцу',
+                    'GodMode (Неуязвимость к ножу и пулям)',
+                    'Silent Aim (Скрытая наводка)'
+                ],
+                luaCode: `-- [[ MM2 Kill All & Silent Aim Script ]]
+local Players = game:GetService("Players")
+local LP = Players.LocalPlayer
+
+function KillAll()
+    local Knife = LP.Character:FindFirstChild("Knife") or LP.Backpack:FindFirstChild("Knife")
+    if Knife then
+        Knife.Parent = LP.Character
+        for _, target in pairs(Players:GetPlayers()) do
+            if target ~= LP and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+                LP.Character.HumanoidRootPart.CFrame = target.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 1)
+                task.wait(0.1)
+                Knife:Activate()
+            end
+        end
+    end
+end
+
+-- Call KillAll()`
+            },
+            {
+                id: 'speed-teleport',
+                title: 'Speed Hack & Teleport GUI',
+                category: 'movement',
+                catLabel: 'Движение',
+                accentColor: 'border-brand-cyan/30 hover:border-brand-cyan/60',
+                badgeBg: 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/30',
+                icon: 'fa-solid fa-bolt text-brand-cyan',
+                description: 'Настройка скорости бега, высоты прыжка и телепортация по клику мыши в любую точку карты.',
+                features: [
+                    'Слайдер регулировки WalkSpeed (16 - 250)',
+                    'Телепорт по нажатию Ctrl + ЛКМ',
+                    'Сохранение предустановок скорости',
+                    'Анти-отброс (Anti-CB/Anti-Lag)'
+                ],
+                luaCode: `-- [[ MM2 Speed Hack & Click Teleport ]]
+local Player = game.Players.LocalPlayer
+local Mouse = Player:GetMouse()
+
+-- Set WalkSpeed
+Player.Character.Humanoid.WalkSpeed = 50
+
+-- Click TP Listener
+Mouse.Button1Down:Connect(function()
+    if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.LeftControl) then
+        if Mouse.Hit then
+            Player.Character.HumanoidRootPart.CFrame = CFrame.new(Mouse.Hit.p + Vector3.new(0, 3, 0))
+        end
+    end
+end)`
+            }
+        ];
+
+        let currentCategory = 'all';
+        let currentModalScript = null;
+
+        // Render Script Cards
+        function renderScripts() {
+            const grid = document.getElementById('scriptsGrid');
+            const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
+            const emptyState = document.getElementById('emptyState');
+            
+            grid.innerHTML = '';
+
+            const filtered = scriptsData.filter(script => {
+                const matchesCat = (currentCategory === 'all' || script.category === currentCategory);
+                const matchesSearch = script.title.toLowerCase().includes(searchVal) || 
+                                      script.description.toLowerCase().includes(searchVal) ||
+                                      script.features.some(f => f.toLowerCase().includes(searchVal));
+                return matchesCat && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                filtered.forEach(script => {
+                    const card = document.createElement('div');
+                    card.className = `glass-card rounded-2xl p-6 flex flex-col justify-between border ${script.accentColor}`;
+                    
+                    const featuresList = script.features.map(f => 
+                        `<li class="flex items-center text-xs text-gray-300">
+                            <i class="fa-solid fa-check text-emerald-400 mr-2 text-[10px]"></i> ${f}
+                        </li>`
+                    ).join('');
+
+                    card.innerHTML = `
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${script.badgeBg}">
+                                    ${script.catLabel}
+                                </span>
+                                <div class="w-9 h-9 rounded-xl bg-brand-dark flex items-center justify-center border border-brand-border">
+                                    <i class="${script.icon}"></i>
+                                </div>
+                            </div>
+                            <h3 class="text-lg font-bold text-white mb-2 leading-snug">${script.title}</h3>
+                            <p class="text-xs text-gray-400 leading-relaxed mb-4">${script.description}</p>
+                            
+                            <div class="mb-6 bg-brand-dark/50 p-3 rounded-xl border border-brand-border/50">
+                                <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block mb-2">Возможности:</span>
+                                <ul class="space-y-1.5">
+                                    ${featuresList}
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t border-brand-border/60 flex items-center gap-2">
+                            <button onclick="copyScriptCode('${script.id}')" class="flex-1 py-2.5 px-3 rounded-xl bg-gradient-to-r from-brand-purple to-purple-700 hover:from-purple-600 hover:to-brand-purple text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-md shadow-brand-purple/20 active:scale-95">
+                                <i class="fa-regular fa-copy"></i> Скопировать
+                            </button>
+                            <button onclick="openCodeModal('${script.id}')" title="Просмотр Lua Кода" class="p-2.5 rounded-xl bg-brand-border/40 hover:bg-brand-border text-gray-300 hover:text-white transition-all border border-brand-border">
+                                <i class="fa-solid fa-code text-xs"></i>
+                            </button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+        }
+
+        // Category Filter Function
+        function setCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                if (btn.getAttribute('data-cat') === cat) {
+                    btn.className = "cat-btn active px-4 py-2.5 rounded-xl text-xs font-semibold transition-all bg-brand-purple text-white shadow-lg shadow-brand-purple/30";
+                } else {
+                    btn.className = "cat-btn px-4 py-2.5 rounded-xl text-xs font-semibold text-gray-400 bg-brand-card hover:bg-brand-border border border-brand-border transition-all";
+                }
+            });
+            renderScripts();
+        }
+
+        // Search Filter Event
+        function filterScripts() {
+            renderScripts();
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            setCategory('all');
+        }
+
+        // Copy Code Toast Notification Function
+        function copyScriptCode(scriptId) {
+            const script = scriptsData.find(s => s.id === scriptId);
+            if (!script) return;
+
+            copyToClipboard(script.luaCode);
+            showToast(`Скрипт «${script.title}» скопирован в буфер обмена!`);
+        }
+
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+        }
+
+        function showToast(message) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = "pointer-events-auto bg-brand-card border border-brand-purple/50 text-white text-xs font-medium px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-4 opacity-0 transition-all duration-300";
+            toast.innerHTML = `
+                <div class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid fa-check text-xs"></i>
+                </div>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-4', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-4', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Code Viewer Modal Controls
+        function openCodeModal(scriptId) {
+            const script = scriptsData.find(s => s.id === scriptId);
+            if (!script) return;
+            currentModalScript = script;
+
+            document.getElementById('modalTitle').innerText = script.title;
+            document.getElementById('modalCategoryBadge').innerText = script.catLabel;
+            document.getElementById('modalCode').innerText = script.luaCode;
+
+            const modal = document.getElementById('codeModal');
+            const container = document.getElementById('codeModalContainer');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            container.classList.remove('scale-95');
+            container.classList.add('scale-100');
+        }
+
+        function closeCodeModal() {
+            const modal = document.getElementById('codeModal');
+            const container = document.getElementById('codeModalContainer');
+            container.classList.remove('scale-100');
+            container.classList.add('scale-95');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        function copyModalCode() {
+            if (currentModalScript) {
+                copyToClipboard(currentModalScript.luaCode);
+                showToast(`Lua код скопирован!`);
+            }
+        }
+
+        // Instructions Modal Controls
+        function openInstructionsModal() {
+            const modal = document.getElementById('instructionsModal');
+            const container = document.getElementById('instructionsModalContainer');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            container.classList.remove('scale-95');
+            container.classList.add('scale-100');
+        }
+
+        function closeInstructionsModal() {
+            const modal = document.getElementById('instructionsModal');
+            const container = document.getElementById('instructionsModalContainer');
+            container.classList.remove('scale-100');
+            container.classList.add('scale-95');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        // Initial Load
+        window.onload = function() {
+            renderScripts();
+        }
+    </script>
+</body>
+</html>
